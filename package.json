@@ -1,0 +1,14 @@
+{
+  "name": "kiosque-commande",
+  "version": "1.0.0",
+  "description": "Page de commande client pour Kiosque Al Kass",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}

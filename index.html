@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kiosque Al Kass — Commander</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1b1712;
+    --card: #241f19;
+    --card-hi: #2c261e;
+    --rust: #c1421a;
+    --gold: #e8a93b;
+    --text: #f2e9dd;
+    --text-muted: #a99d8c;
+    --line: #3a332a;
+    --closed: #6b6154;
+    --open: #6a9a4f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    padding-bottom: 110px;
+  }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 24px 18px 0; }
+
+  header { text-align: center; margin-bottom: 18px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 40px;
+    margin: 6px 0 2px;
+    line-height: 1;
+  }
+  .souscritre { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
+
+  /* --- Enseigne OUVERT / FERMÉ (élément signature) --- */
+  .enseigne {
+    perspective: 800px;
+    margin: 0 auto 26px;
+    width: 220px;
+    height: 64px;
+  }
+  .enseigne-face {
+    width: 100%; height: 100%;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 0.06em;
+    transition: transform 0.6s cubic-bezier(.4,.2,.2,1), background 0.6s;
+    transform-style: preserve-3d;
+    border: 2px solid var(--line);
+  }
+  .enseigne-face.ouvert { background: var(--open); color: #12210d; }
+  .enseigne-face.ferme { background: var(--closed); color: #201c15; }
+  .enseigne-face.flip { transform: rotateX(360deg); }
+  .prochain { text-align: center; font-size: 12.5px; color: var(--text-muted); margin: -14px 0 24px; }
+  .prochain b { color: var(--gold); }
+
+  .section-titre {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 22px;
+    margin: 30px 0 12px;
+    display: flex; align-items: baseline; gap: 8px;
+  }
+  .section-titre .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    background: rgba(232,169,59,0.12);
+    padding: 3px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .card.indispo { opacity: 0.5; }
+  .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .card-nom { font-weight: 600; font-size: 16px; }
+  .card-note { font-size: 12.5px; color: var(--text-muted); margin-top: 2px; }
+
+  .options { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  .pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    background: var(--card-hi);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .pill.actif { background: var(--rust); border-color: var(--rust); color: #fff; }
+  .pill:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .toggle-oeuf {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 13.5px; color: var(--text-muted);
+    padding-top: 8px; border-top: 1px dashed var(--line); margin-top: 4px;
+  }
+  .toggle-oeuf select {
+    background: var(--card-hi); color: var(--text); border: 1px solid var(--line);
+    border-radius: 8px; padding: 5px 8px; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px;
+  }
+
+  .qty { display: flex; align-items: center; gap: 10px; justify-content: flex-end; margin-top: 12px; }
+  .qty button {
+    width: 30px; height: 30px; border-radius: 50%;
+    border: 1px solid var(--line); background: var(--card-hi); color: var(--text);
+    font-size: 16px; cursor: pointer;
+  }
+  .qty span { font-family: 'IBM Plex Mono', monospace; min-width: 16px; text-align: center; }
+
+  form#coordonnees {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 16px; margin-top: 22px;
+  }
+  form#coordonnees label {
+    display: block; font-size: 12.5px; color: var(--text-muted); margin: 10px 0 4px;
+  }
+  form#coordonnees input {
+    width: 100%; padding: 11px 12px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--card-hi); color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif; font-size: 14px;
+  }
+
+  .barre {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(180deg, transparent, var(--bg) 30%);
+    padding: 20px 18px 18px;
+  }
+  .barre-inner {
+    max-width: 480px; margin: 0 auto;
+    background: var(--rust);
+    border-radius: 14px;
+    padding: 14px 18px;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+    border: none;
+    width: 100%;
+  }
+  .barre-inner:disabled { background: var(--closed); cursor: not-allowed; }
+  .barre-total { font-family: 'IBM Plex Mono', monospace; font-weight: 600; color: #fff; font-size: 15px; }
+  .barre-cta { font-family: 'Fraunces', serif; font-weight: 700; color: #fff; font-size: 16px; }
+
+  .toast {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    background: var(--open); color: #12210d; padding: 12px 20px; border-radius: 10px;
+    font-weight: 600; font-size: 14px; opacity: 0; transition: all 0.3s; z-index: 10;
+    max-width: 90%; text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Kiosque Al Kass</div>
+    <h1>Commander</h1>
+    <div class="souscritre">Spaghetti chaud, lait frais — préparés sur place à Abidjan.</div>
+  </header>
+
+  <div class="enseigne">
+    <div class="enseigne-face" id="enseigneFace"></div>
+  </div>
+  <div class="prochain" id="prochain"></div>
+
+  <div id="menu"></div>
+
+  <form id="coordonnees">
+    <div class="section-titre" style="margin-top:0;">Vos coordonnées</div>
+    <label for="nom">Nom</label>
+    <input type="text" id="nom" placeholder="Ex : Awa Koné" required>
+    <label for="telephone">Téléphone (WhatsApp)</label>
+    <input type="tel" id="telephone" placeholder="Ex : 07 00 00 00 00" required>
+  </form>
+</div>
+
+<div class="barre">
+  <button class="barre-inner" id="btnCommander" disabled>
+    <span class="barre-cta">Envoyer la commande</span>
+    <span class="barre-total" id="totalAffiche">0 FCFA</span>
+  </button>
+</div>
+
+<script>
+const ABIDJAN_OFFSET_HEURES = 0; // Abidjan = UTC+0
+
+function heureAbidjan() {
+  const now = new Date();
+  const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+  return new Date(utc + ABIDJAN_OFFSET_HEURES * 3600000);
+}
+
+function minutesDepuisMinuit(d) {
+  return d.getHours() * 60 + d.getMinutes();
+}
+
+// Créneaux : matin 7h30-11h30, soir 20h00-00h30
+function statutKiosque() {
+  const d = heureAbidjan();
+  const m = minutesDepuisMinuit(d);
+  const matinDebut = 7 * 60 + 30, matinFin = 11 * 60 + 30;
+  const soirDebut = 20 * 60, soirFin = 24 * 60 + 30; // jusqu'à 00h30
+
+  if (m >= matinDebut && m < matinFin) return { ouvert: true, creneau: 'matin' };
+  if (m >= soirDebut && m < soirFin) return { ouvert: true, creneau: 'soir' };
+  if (m < 30) return { ouvert: true, creneau: 'soir' }; // 00h00-00h30
+  return { ouvert: false, creneau: null };
+}
+
+function disponibilites() {
+  const s = statutKiosque();
+  return {
+    spaghetti: s.ouvert && s.creneau === 'soir',
+    lait: s.ouvert,
+    cafe_sur_place: true // toujours affiché, jamais commandable en ligne
+  };
+}
+
+const PRIX = {
+  spaghetti: [700, 800, 1000],
+  oeuf: 200,
+  lait: [500, 800]
+};
+
+let panier = { spaghetti: null, spaghettiOeuf: false, spaghettiOeufStyle: 'grillé', spaghettiQte: 1,
+                laitPrix: null, laitQte: 1 };
+
+function maj() {
+  const s = statutKiosque();
+  const face = document.getElementById('enseigneFace');
+  const prochain = document.getElementById('prochain');
+
+  face.textContent = s.ouvert ? 'OUVERT' : 'FERMÉ';
+  face.className = 'enseigne-face ' + (s.ouvert ? 'ouvert' : 'ferme');
+
+  if (s.ouvert && s.creneau === 'matin') {
+    prochain.innerHTML = '☕ Créneau du matin — lait disponible. Spaghetti dès <b>20h00</b>.';
+  } else if (s.ouvert && s.creneau === 'soir') {
+    prochain.innerHTML = '🍝 Créneau du soir — spaghetti & lait disponibles.';
+  } else {
+    prochain.innerHTML = 'Kiosque fermé — réouverture à <b>7h30</b> ou <b>20h00</b>.';
+  }
+
+  renderMenu();
+  majTotal();
+}
+
+function renderMenu() {
+  const dispo = disponibilites();
+  const menu = document.getElementById('menu');
+  menu.innerHTML = `
+    <div class="section-titre">Spaghetti <span class="tag">soir uniquement</span></div>
+    <div class="card ${dispo.spaghetti ? '' : 'indispo'}">
+      <div class="card-top">
+        <div>
+          <div class="card-nom">Formule</div>
+          <div class="card-note">${dispo.spaghetti ? 'Choisissez votre formule' : 'Disponible à partir de 20h00'}</div>
+        </div>
+      </div>
+      <div class="options" id="optSpaghetti">
+        ${PRIX.spaghetti.map(p => `<button class="pill" data-prix="${p}" ${dispo.spaghetti ? '' : 'disabled'} onclick="choisirSpaghetti(${p})">${p} F</button>`).join('')}
+      </div>
+      <div class="toggle-oeuf">
+        <label style="display:flex;align-items:center;gap:8px;">
+          <input type="checkbox" id="oeufCheck" ${dispo.spaghetti ? '' : 'disabled'} onchange="toggleOeuf()">
+          + Œuf (200 F)
+        </label>
+        <select id="oeufStyle" ${dispo.spaghetti ? '' : 'disabled'} onchange="styleOeuf()">
+          <option value="grillé">Grillé</option>
+          <option value="cassé">Cassé</option>
+        </select>
+      </div>
+      <div class="qty">
+        <button ${dispo.spaghetti ? '' : 'disabled'} onclick="changerQte('spaghettiQte',-1)">−</button>
+        <span id="qteSpaghetti">1</span>
+        <button ${dispo.spaghetti ? '' : 'disabled'} onclick="changerQte('spaghettiQte',1)">+</button>
+      </div>
+    </div>
+
+    <div class="section-titre">Lait <span class="tag">matin & soir</span></div>
+    <div class="card ${dispo.lait ? '' : 'indispo'}">
+      <div class="card-top">
+        <div>
+          <div class="card-nom">Format</div>
+          <div class="card-note">${dispo.lait ? 'Choisissez le format' : 'Kiosque fermé'}</div>
+        </div>
+      </div>
+      <div class="options" id="optLait">
+        ${PRIX.lait.map(p => `<button class="pill" data-prix="${p}" ${dispo.lait ? '' : 'disabled'} onclick="choisirLait(${p})">${p} F</button>`).join('')}
+      </div>
+      <div class="qty">
+        <button ${dispo.lait ? '' : 'disabled'} onclick="changerQte('laitQte',-1)">−</button>
+        <span id="qteLait">1</span>
+        <button ${dispo.lait ? '' : 'disabled'} onclick="changerQte('laitQte',1)">+</button>
+      </div>
+    </div>
+
+    <div class="section-titre">Café <span class="tag">sur place, matin</span></div>
+    <div class="card indispo">
+      <div class="card-top">
+        <div>
+          <div class="card-nom">Café</div>
+          <div class="card-note">Uniquement en vous rendant sur place, le matin. Non commandable ici.</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function choisirSpaghetti(prix) {
+  panier.spaghetti = prix;
+  document.querySelectorAll('#optSpaghetti .pill').forEach(b => {
+    b.classList.toggle('actif', parseInt(b.dataset.prix) === prix);
+  });
+  majTotal();
+}
+function choisirLait(prix) {
+  panier.laitPrix = prix;
+  document.querySelectorAll('#optLait .pill').forEach(b => {
+    b.classList.toggle('actif', parseInt(b.dataset.prix) === prix);
+  });
+  majTotal();
+}
+function toggleOeuf() {
+  panier.spaghettiOeuf = document.getElementById('oeufCheck').checked;
+  majTotal();
+}
+function styleOeuf() {
+  panier.spaghettiOeufStyle = document.getElementById('oeufStyle').value;
+}
+function changerQte(cle, delta) {
+  panier[cle] = Math.max(1, (panier[cle] || 1) + delta);
+  const id = cle === 'spaghettiQte' ? 'qteSpaghetti' : 'qteLait';
+  document.getElementById(id).textContent = panier[cle];
+  majTotal();
+}
+
+function calculerTotal() {
+  let total = 0;
+  if (panier.spaghetti) {
+    let prixUnite = panier.spaghetti + (panier.spaghettiOeuf ? PRIX.oeuf : 0);
+    total += prixUnite * panier.spaghettiQte;
+  }
+  if (panier.laitPrix) {
+    total += panier.laitPrix * panier.laitQte;
+  }
+  return total;
+}
+
+function majTotal() {
+  const total = calculerTotal();
+  document.getElementById('totalAffiche').textContent = total + ' FCFA';
+  const btn = document.getElementById('btnCommander');
+  btn.disabled = total === 0;
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+document.getElementById('btnCommander').addEventListener('click', async () => {
+  const nom = document.getElementById('nom').value.trim();
+  const telephone = document.getElementById('telephone').value.trim();
+
+  if (!nom || !telephone) {
+    toast('Merci de renseigner votre nom et votre téléphone.');
+    return;
+  }
+
+  const items = [];
+  if (panier.spaghetti) {
+    items.push({
+      produit: 'Spaghetti',
+      prix: panier.spaghetti + (panier.spaghettiOeuf ? PRIX.oeuf : 0),
+      quantite: panier.spaghettiQte,
+      oeuf: panier.spaghettiOeuf ? panier.spaghettiOeufStyle : null
+    });
+  }
+  if (panier.laitPrix) {
+    items.push({ produit: 'Lait', prix: panier.laitPrix, quantite: panier.laitQte, oeuf: null });
+  }
+
+  const btn = document.getElementById('btnCommander');
+  btn.disabled = true;
+  btn.querySelector('.barre-cta').textContent = 'Envoi en cours...';
+
+  try {
+    const res = await fetch('/commander', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nom, telephone, items, total: calculerTotal() })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      toast('✅ Commande envoyée ! Le kiosque a été notifié.');
+      panier = { spaghetti: null, spaghettiOeuf: false, spaghettiOeufStyle: 'grillé', spaghettiQte: 1, laitPrix: null, laitQte: 1 };
+      renderMenu();
+      majTotal();
+    } else {
+      toast(data.erreur || 'Une erreur est survenue, réessayez.');
+    }
+  } catch (e) {
+    toast('Connexion impossible. Vérifiez votre réseau.');
+  }
+
+  btn.querySelector('.barre-cta').textContent = 'Envoyer la commande';
+  majTotal();
+});
+
+maj();
+setInterval(maj, 60000); // vérifie l'heure chaque minute
+</script>
+
+</body>
+</html>
