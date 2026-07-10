@@ -22,14 +22,33 @@
   * { box-sizing: border-box; }
   body {
     margin: 0;
-    background: var(--bg);
+    background:
+      radial-gradient(ellipse at top, rgba(232,169,59,0.06), transparent 60%),
+      var(--bg);
     color: var(--text);
     font-family: 'IBM Plex Sans', sans-serif;
     padding-bottom: 110px;
   }
   .wrap { max-width: 480px; margin: 0 auto; padding: 24px 18px 0; }
 
-  header { text-align: center; margin-bottom: 18px; }
+  header { text-align: center; margin-bottom: 6px; }
+
+  /* --- Bol de spaghetti fumant (hero) --- */
+  .hero-bowl { width: 120px; height: 120px; margin: 0 auto 4px; position: relative; }
+  .vapeur { position: absolute; top: -18px; left: 0; right: 0; display: flex; justify-content: center; gap: 10px; }
+  .vapeur span {
+    display: block; width: 5px; height: 22px; border-radius: 4px;
+    background: linear-gradient(180deg, transparent, rgba(242,233,221,0.35));
+    animation: monter 2.4s ease-in-out infinite;
+  }
+  .vapeur span:nth-child(2) { animation-delay: 0.6s; }
+  .vapeur span:nth-child(3) { animation-delay: 1.2s; }
+  @keyframes monter {
+    0% { transform: translateY(6px) scaleY(0.6); opacity: 0; }
+    30% { opacity: 0.8; }
+    100% { transform: translateY(-16px) scaleY(1.1); opacity: 0; }
+  }
+
   .eyebrow {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 12px;
@@ -40,44 +59,46 @@
   h1 {
     font-family: 'Fraunces', serif;
     font-weight: 900;
-    font-size: 40px;
-    margin: 6px 0 2px;
+    font-size: 38px;
+    margin: 4px 0 2px;
     line-height: 1;
   }
-  .souscritre { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
+  .souscritre { color: var(--text-muted); font-size: 14px; margin-bottom: 18px; }
 
-  /* --- Enseigne OUVERT / FERMÉ (élément signature) --- */
-  .enseigne {
-    perspective: 800px;
-    margin: 0 auto 26px;
-    width: 220px;
-    height: 64px;
-  }
+  /* --- Enseigne OUVERT / FERMÉ --- */
+  .enseigne { margin: 0 auto 12px; width: 220px; height: 60px; }
   .enseigne-face {
     width: 100%; height: 100%;
     border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
     font-family: 'Fraunces', serif;
     font-weight: 700;
-    font-size: 20px;
+    font-size: 19px;
     letter-spacing: 0.06em;
-    transition: transform 0.6s cubic-bezier(.4,.2,.2,1), background 0.6s;
-    transform-style: preserve-3d;
+    transition: background 0.6s, color 0.6s;
     border: 2px solid var(--line);
   }
   .enseigne-face.ouvert { background: var(--open); color: #12210d; }
   .enseigne-face.ferme { background: var(--closed); color: #201c15; }
-  .enseigne-face.flip { transform: rotateX(360deg); }
-  .prochain { text-align: center; font-size: 12.5px; color: var(--text-muted); margin: -14px 0 24px; }
+  .prochain { text-align: center; font-size: 12.5px; color: var(--text-muted); margin: 0 0 8px; }
   .prochain b { color: var(--gold); }
+
+  .attente {
+    text-align: center; font-size: 12px; color: var(--text-muted);
+    background: var(--card); border: 1px dashed var(--line); border-radius: 10px;
+    padding: 8px 12px; margin-bottom: 24px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .attente b { color: var(--gold); }
 
   .section-titre {
     font-family: 'Fraunces', serif;
     font-weight: 700;
-    font-size: 22px;
-    margin: 30px 0 12px;
-    display: flex; align-items: baseline; gap: 8px;
+    font-size: 21px;
+    margin: 26px 0 12px;
+    display: flex; align-items: center; gap: 10px;
   }
+  .section-titre .icone { flex-shrink: 0; }
   .section-titre .tag {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 11px;
@@ -86,6 +107,7 @@
     padding: 3px 8px;
     border-radius: 20px;
     letter-spacing: 0.04em;
+    margin-left: auto;
   }
 
   .card {
@@ -146,6 +168,12 @@
     font-family: 'IBM Plex Sans', sans-serif; font-size: 14px;
   }
 
+  .liens-bas {
+    display: flex; justify-content: center; gap: 18px;
+    margin: 28px 0 0; font-size: 12.5px;
+  }
+  .liens-bas a { color: var(--text-muted); text-decoration: none; border-bottom: 1px dotted var(--line); }
+
   .barre {
     position: fixed; bottom: 0; left: 0; right: 0;
     background: linear-gradient(180deg, transparent, var(--bg) 30%);
@@ -180,6 +208,17 @@
 
 <div class="wrap">
   <header>
+    <div class="hero-bowl">
+      <div class="vapeur"><span></span><span></span><span></span></div>
+      <svg viewBox="0 0 120 100" width="120" height="100">
+        <ellipse cx="60" cy="70" rx="52" ry="16" fill="#2c261e" stroke="#3a332a" stroke-width="2"/>
+        <path d="M14 62 Q60 88 106 62 L106 70 Q60 96 14 70 Z" fill="#1f1a15"/>
+        <ellipse cx="60" cy="60" rx="46" ry="14" fill="#e8a93b" opacity="0.9"/>
+        <path d="M28 58 Q40 46 34 54 Q46 44 42 54 Q54 44 50 56 Q64 44 60 56 Q74 44 70 56 Q84 46 78 58" fill="none" stroke="#c1421a" stroke-width="3.5" stroke-linecap="round"/>
+        <circle cx="46" cy="55" r="3.5" fill="#f2e9dd"/>
+        <circle cx="68" cy="53" r="3.5" fill="#f2e9dd"/>
+      </svg>
+    </div>
     <div class="eyebrow">Kiosque Al Kass</div>
     <h1>Commander</h1>
     <div class="souscritre">Spaghetti chaud, lait frais — préparés sur place à Abidjan.</div>
@@ -189,6 +228,7 @@
     <div class="enseigne-face" id="enseigneFace"></div>
   </div>
   <div class="prochain" id="prochain"></div>
+  <div class="attente" id="attente">📋 Chargement de la file d'attente...</div>
 
   <div id="menu"></div>
 
@@ -199,6 +239,11 @@
     <label for="telephone">Téléphone (WhatsApp)</label>
     <input type="tel" id="telephone" placeholder="Ex : 07 00 00 00 00" required>
   </form>
+
+  <div class="liens-bas">
+    <a href="/classement.html">🏆 Classement</a>
+    <a href="/profil.html">👤 Mon profil</a>
+  </div>
 </div>
 
 <div class="barre">
@@ -209,6 +254,12 @@
 </div>
 
 <script>
+const ICONES = {
+  spaghetti: '<svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="12" fill="#c1421a" opacity="0.18"/><path d="M6 10 Q10 6 8 10 Q13 5 11 10 Q16 5 14 11 Q20 6 17 12" fill="none" stroke="#c1421a" stroke-width="2" stroke-linecap="round"/></svg>',
+  lait: '<svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="12" fill="#e8a93b" opacity="0.18"/><path d="M10 6h6l1 3-1 12H10L9 9z" fill="none" stroke="#e8a93b" stroke-width="2"/></svg>',
+  cafe: '<svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="12" fill="#a99d8c" opacity="0.18"/><path d="M7 10h10v6a5 5 0 01-10 0z" fill="none" stroke="#a99d8c" stroke-width="2"/><path d="M17 11h2a2 2 0 010 4h-2" fill="none" stroke="#a99d8c" stroke-width="2"/></svg>'
+};
+
 const ABIDJAN_OFFSET_HEURES = 0; // Abidjan = UTC+0
 
 function heureAbidjan() {
@@ -216,41 +267,42 @@ function heureAbidjan() {
   const utc = now.getTime() + now.getTimezoneOffset() * 60000;
   return new Date(utc + ABIDJAN_OFFSET_HEURES * 3600000);
 }
+function minutesDepuisMinuit(d) { return d.getHours() * 60 + d.getMinutes(); }
 
-function minutesDepuisMinuit(d) {
-  return d.getHours() * 60 + d.getMinutes();
-}
-
-// Créneaux : matin 7h30-11h30, soir 20h00-00h30
 function statutKiosque() {
   const d = heureAbidjan();
   const m = minutesDepuisMinuit(d);
   const matinDebut = 7 * 60 + 30, matinFin = 11 * 60 + 30;
-  const soirDebut = 20 * 60, soirFin = 24 * 60 + 30; // jusqu'à 00h30
+  const soirDebut = 20 * 60, soirFin = 24 * 60 + 30;
 
   if (m >= matinDebut && m < matinFin) return { ouvert: true, creneau: 'matin' };
   if (m >= soirDebut && m < soirFin) return { ouvert: true, creneau: 'soir' };
-  if (m < 30) return { ouvert: true, creneau: 'soir' }; // 00h00-00h30
+  if (m < 30) return { ouvert: true, creneau: 'soir' };
   return { ouvert: false, creneau: null };
 }
 
 function disponibilites() {
   const s = statutKiosque();
-  return {
-    spaghetti: s.ouvert && s.creneau === 'soir',
-    lait: s.ouvert,
-    cafe_sur_place: true // toujours affiché, jamais commandable en ligne
-  };
+  return { spaghetti: s.ouvert && s.creneau === 'soir', lait: s.ouvert, cafe_sur_place: true };
 }
 
-const PRIX = {
-  spaghetti: [700, 800, 1000],
-  oeuf: 200,
-  lait: [500, 800]
-};
+const PRIX = { spaghetti: [700, 800, 1000], oeuf: 200, lait: [500, 800] };
 
 let panier = { spaghetti: null, spaghettiOeuf: false, spaghettiOeufStyle: 'grillé', spaghettiQte: 1,
                 laitPrix: null, laitQte: 1 };
+
+async function majAttente() {
+  try {
+    const res = await fetch('/api/file-attente');
+    if (res.ok) {
+      const data = await res.json();
+      document.getElementById('attente').innerHTML =
+        data.enAttente > 0
+          ? `📋 <b>${data.enAttente}</b> commande(s) en préparation — environ <b>${data.tempsEstime} min</b> d'attente si vous commandez maintenant.`
+          : `📋 Aucune attente actuellement — votre commande partira directement en préparation.`;
+    }
+  } catch (e) {}
+}
 
 function maj() {
   const s = statutKiosque();
@@ -270,13 +322,14 @@ function maj() {
 
   renderMenu();
   majTotal();
+  majAttente();
 }
 
 function renderMenu() {
   const dispo = disponibilites();
   const menu = document.getElementById('menu');
   menu.innerHTML = `
-    <div class="section-titre">Spaghetti <span class="tag">soir uniquement</span></div>
+    <div class="section-titre"><span class="icone">${ICONES.spaghetti}</span>Spaghetti <span class="tag">soir uniquement</span></div>
     <div class="card ${dispo.spaghetti ? '' : 'indispo'}">
       <div class="card-top">
         <div>
@@ -304,7 +357,7 @@ function renderMenu() {
       </div>
     </div>
 
-    <div class="section-titre">Lait <span class="tag">matin & soir</span></div>
+    <div class="section-titre"><span class="icone">${ICONES.lait}</span>Lait <span class="tag">matin & soir</span></div>
     <div class="card ${dispo.lait ? '' : 'indispo'}">
       <div class="card-top">
         <div>
@@ -322,7 +375,7 @@ function renderMenu() {
       </div>
     </div>
 
-    <div class="section-titre">Café <span class="tag">sur place, matin</span></div>
+    <div class="section-titre"><span class="icone">${ICONES.cafe}</span>Café <span class="tag">sur place, matin</span></div>
     <div class="card indispo">
       <div class="card-top">
         <div>
@@ -336,25 +389,16 @@ function renderMenu() {
 
 function choisirSpaghetti(prix) {
   panier.spaghetti = prix;
-  document.querySelectorAll('#optSpaghetti .pill').forEach(b => {
-    b.classList.toggle('actif', parseInt(b.dataset.prix) === prix);
-  });
+  document.querySelectorAll('#optSpaghetti .pill').forEach(b => b.classList.toggle('actif', parseInt(b.dataset.prix) === prix));
   majTotal();
 }
 function choisirLait(prix) {
   panier.laitPrix = prix;
-  document.querySelectorAll('#optLait .pill').forEach(b => {
-    b.classList.toggle('actif', parseInt(b.dataset.prix) === prix);
-  });
+  document.querySelectorAll('#optLait .pill').forEach(b => b.classList.toggle('actif', parseInt(b.dataset.prix) === prix));
   majTotal();
 }
-function toggleOeuf() {
-  panier.spaghettiOeuf = document.getElementById('oeufCheck').checked;
-  majTotal();
-}
-function styleOeuf() {
-  panier.spaghettiOeufStyle = document.getElementById('oeufStyle').value;
-}
+function toggleOeuf() { panier.spaghettiOeuf = document.getElementById('oeufCheck').checked; majTotal(); }
+function styleOeuf() { panier.spaghettiOeufStyle = document.getElementById('oeufStyle').value; }
 function changerQte(cle, delta) {
   panier[cle] = Math.max(1, (panier[cle] || 1) + delta);
   const id = cle === 'spaghettiQte' ? 'qteSpaghetti' : 'qteLait';
@@ -364,47 +408,32 @@ function changerQte(cle, delta) {
 
 function calculerTotal() {
   let total = 0;
-  if (panier.spaghetti) {
-    let prixUnite = panier.spaghetti + (panier.spaghettiOeuf ? PRIX.oeuf : 0);
-    total += prixUnite * panier.spaghettiQte;
-  }
-  if (panier.laitPrix) {
-    total += panier.laitPrix * panier.laitQte;
-  }
+  if (panier.spaghetti) total += (panier.spaghetti + (panier.spaghettiOeuf ? PRIX.oeuf : 0)) * panier.spaghettiQte;
+  if (panier.laitPrix) total += panier.laitPrix * panier.laitQte;
   return total;
 }
 
 function majTotal() {
   const total = calculerTotal();
   document.getElementById('totalAffiche').textContent = total + ' FCFA';
-  const btn = document.getElementById('btnCommander');
-  btn.disabled = total === 0;
+  document.getElementById('btnCommander').disabled = total === 0;
 }
 
 function toast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3200);
+  setTimeout(() => t.classList.remove('show'), 4500);
 }
 
 document.getElementById('btnCommander').addEventListener('click', async () => {
   const nom = document.getElementById('nom').value.trim();
   const telephone = document.getElementById('telephone').value.trim();
-
-  if (!nom || !telephone) {
-    toast('Merci de renseigner votre nom et votre téléphone.');
-    return;
-  }
+  if (!nom || !telephone) { toast('Merci de renseigner votre nom et votre téléphone.'); return; }
 
   const items = [];
   if (panier.spaghetti) {
-    items.push({
-      produit: 'Spaghetti',
-      prix: panier.spaghetti + (panier.spaghettiOeuf ? PRIX.oeuf : 0),
-      quantite: panier.spaghettiQte,
-      oeuf: panier.spaghettiOeuf ? panier.spaghettiOeufStyle : null
-    });
+    items.push({ produit: 'Spaghetti', prix: panier.spaghetti + (panier.spaghettiOeuf ? PRIX.oeuf : 0), quantite: panier.spaghettiQte, oeuf: panier.spaghettiOeuf ? panier.spaghettiOeufStyle : null });
   }
   if (panier.laitPrix) {
     items.push({ produit: 'Lait', prix: panier.laitPrix, quantite: panier.laitQte, oeuf: null });
@@ -416,16 +445,16 @@ document.getElementById('btnCommander').addEventListener('click', async () => {
 
   try {
     const res = await fetch('/commander', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ nom, telephone, items, total: calculerTotal() })
     });
     const data = await res.json();
     if (res.ok) {
-      toast('✅ Commande envoyée ! Le kiosque a été notifié.');
+      toast(`✅ Commande envoyée ! Patientez environ ${data.tempsAttente} min (${data.commandesAvant} commande(s) avant vous).`);
       panier = { spaghetti: null, spaghettiOeuf: false, spaghettiOeufStyle: 'grillé', spaghettiQte: 1, laitPrix: null, laitQte: 1 };
       renderMenu();
       majTotal();
+      majAttente();
     } else {
       toast(data.erreur || 'Une erreur est survenue, réessayez.');
     }
@@ -438,7 +467,7 @@ document.getElementById('btnCommander').addEventListener('click', async () => {
 });
 
 maj();
-setInterval(maj, 60000); // vérifie l'heure chaque minute
+setInterval(maj, 60000);
 </script>
 
 </body>
