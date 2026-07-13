@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard entreprise — Kiosque Al Kass</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { background:#1b1712; color:#f2e9dd; font-family:'IBM Plex Sans',sans-serif; margin:0; padding:24px 18px 60px; }
+  .wrap { max-width: 520px; margin: 0 auto; }
+  .top { display:flex; justify-content:space-between; align-items:center; margin-bottom: 18px; }
+  h1 { font-family:'Fraunces',serif; font-weight:900; font-size:26px; margin:0; }
+  .deconnexion { font-size:12.5px; color:#a99d8c; cursor:pointer; text-decoration:underline; background:none; border:none; }
+
+  .grille { display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+  .stat { background:#241f19; border:1px solid #3a332a; border-radius:12px; padding:16px; }
+  .stat .label { font-size:11.5px; color:#a99d8c; text-transform:uppercase; letter-spacing:0.05em; }
+  .stat .valeur { font-family:'IBM Plex Mono',monospace; font-size:22px; color:#e8a93b; font-weight:600; margin-top:4px; }
+
+  .section-titre { font-family:'Fraunces',serif; font-weight:700; font-size:20px; margin: 26px 0 12px; }
+  .ligne {
+    display:flex; align-items:center; gap:14px;
+    background:#241f19; border:1px solid #3a332a; border-radius:12px;
+    padding:14px 16px; margin-bottom:10px;
+  }
+  .rang { font-family:'Fraunces',serif; font-weight:900; font-size:20px; color:#c1421a; width:26px; }
+  .infos { flex:1; }
+  .nom { font-weight:600; font-size:14px; }
+  .tel { font-size:11.5px; color:#a99d8c; font-family:'IBM Plex Mono',monospace; }
+  .stats2 { text-align:right; font-family:'IBM Plex Mono',monospace; font-size:12.5px; }
+  .stats2 b { color:#e8a93b; }
+  .vide { text-align:center; color:#a99d8c; padding:30px 0; font-size:13.5px; }
+  .chargement { text-align:center; padding: 80px 0; color:#a99d8c; }
+</style>
+</head>
+<body>
+<div class="wrap" id="contenuProtege" style="display:none;">
+  <div class="top">
+    <h1>📊 Tableau de bord</h1>
+    <button class="deconnexion" onclick="deconnexion()">Se déconnecter</button>
+  </div>
+
+  <a href="/comptes/" style="display:block; text-align:center; background:#241f19; border:1px solid #3a332a; border-radius:12px; padding:14px; margin-bottom:20px; color:#e8a93b; text-decoration:none; font-family:'Fraunces',serif; font-weight:700;">
+    📒 Ouvrir les comptes-rendus (ventes, dépenses, objectifs)
+  </a>
+
+  <div class="grille">
+    <div class="stat"><div class="label">Aujourd'hui</div><div class="valeur" id="revenuJour">—</div></div>
+    <div class="stat"><div class="label">Cette semaine</div><div class="valeur" id="revenuSemaine">—</div></div>
+    <div class="stat"><div class="label">Ce mois</div><div class="valeur" id="revenuMois">—</div></div>
+    <div class="stat"><div class="label">Total commandes</div><div class="valeur" id="nbCommandes">—</div></div>
+  </div>
+
+  <div class="section-titre">🏆 Classement complet (semaine)</div>
+  <div id="classement"></div>
+</div>
+
+<div class="chargement" id="chargement">Vérification de la session...</div>
+
+<script>
+async function init() {
+  const res = await fetch('/api/entreprise/moi');
+  if (!res.ok) {
+    window.location.href = '/entreprise/login.html';
+    return;
+  }
+  document.getElementById('chargement').style.display = 'none';
+  document.getElementById('contenuProtege').style.display = 'block';
+  chargerRevenu();
+  chargerClassement();
+}
+
+async function chargerRevenu() {
+  const res = await fetch('/api/revenu');
+  if (!res.ok) return;
+  const data = await res.json();
+  document.getElementById('revenuJour').textContent = data.jour + ' F';
+  document.getElementById('revenuSemaine').textContent = data.semaine + ' F';
+  document.getElementById('revenuMois').textContent = data.mois + ' F';
+  document.getElementById('nbCommandes').textContent = data.nombreCommandes;
+}
+
+async function chargerClassement() {
+  const res = await fetch('/api/classement/complet');
+  if (!res.ok) return;
+  const data = await res.json();
+  const el = document.getElementById('classement');
+  if (data.classement.length === 0) {
+    el.innerHTML = '<div class="vide">Aucune commande cette semaine.</div>';
+    return;
+  }
+  el.innerHTML = data.classement.map((c, i) => `
+    <div class="ligne">
+      <div class="rang">${i + 1}</div>
+      <div class="infos">
+        <div class="nom">${c.nom}</div>
+        <div class="tel">${c.telephone}</div>
+      </div>
+      <div class="stats2">${c.spaghettis} spaghetti(s)<br><b>${c.totalDepense} FCFA</b></div>
+    </div>
+  `).join('');
+}
+
+async function deconnexion() {
+  await fetch('/entreprise/deconnexion', { method: 'POST' });
+  window.location.href = '/entreprise/login.html';
+}
+
+init();
+</script>
+</body>
+</html>

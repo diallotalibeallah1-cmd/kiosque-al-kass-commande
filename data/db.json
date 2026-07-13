@@ -1,0 +1,55 @@
+{
+  "users": [
+    {
+      "id": "168ee8a9-4b37-475e-ac5c-ad6691f7b47a",
+      "email": "diallotalibeallah1@gmail.com",
+      "passwordHash": "$2a$10$IKD.rpNgPg039q9aAT0SyuPnK43bvHI8BL7V2uTx07txGmYeLgjmu",
+      "createdAt": "2026-07-04T16:36:35.748Z"
+    },
+    {
+      "id": "a9c04308-3620-4330-9bbc-c160a66997ef",
+      "email": "diallotalibeallah123@gmail.com",
+      "passwordHash": "$2a$10$B6NX3vxsjVoxMIzRthmSZeswzYYcqQV/OknyeHuihOzLyPiSCH9kO",
+      "createdAt": "2026-07-04T16:36:55.593Z"
+    }
+  ],
+  "reports": [],
+  "stock": [
+    {
+      "userId": "168ee8a9-4b37-475e-ac5c-ad6691f7b47a",
+      "key": "boissons",
+      "label": "Boissons",
+      "value": "0 unité"
+    },
+    {
+      "userId": "168ee8a9-4b37-475e-ac5c-ad6691f7b47a",
+      "key": "biscuits",
+      "label": "Biscuits",
+      "value": "0 unité"
+    },
+    {
+      "userId": "168ee8a9-4b37-475e-ac5c-ad6691f7b47a",
+      "key": "divers",
+      "label": "Produits divers",
+      "value": "0 unité"
+    },
+    {
+      "userId": "a9c04308-3620-4330-9bbc-c160a66997ef",
+      "key": "boissons",
+      "label": "Boissons",
+      "value": "0 unité"
+    },
+    {
+      "userId": "a9c04308-3620-4330-9bbc-c160a66997ef",
+      "key": "biscuits",
+      "label": "Biscuits",
+      "value": "0 unité"
+    },
+    {
+      "userId": "a9c04308-3620-4330-9bbc-c160a66997ef",
+      "key": "divers",
+      "label": "Produits divers",
+      "value": "0 unité"
+    }
+  ]
+}

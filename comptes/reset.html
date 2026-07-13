@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Réinitialiser le mot de passe — Kiosque Alkass</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="auth-screen" id="authScreen">
+  <div class="auth-card">
+    <div class="brand"><span>K</span><div><h1>Kiosque Alkass</h1><p>Nouveau mot de passe</p></div></div>
+
+    <form id="resetForm" class="form">
+      <input id="newPassword" type="password" placeholder="Nouveau mot de passe (6 caractères min.)" required />
+      <p class="error hidden" id="resetError"></p>
+      <p class="success hidden" id="resetSuccess"></p>
+      <button type="submit">Valider le nouveau mot de passe</button>
+      <a href="/comptes/">Retour à la connexion</a>
+    </form>
+  </div>
+</div>
+
+<script>
+async function api(path, options = {}) {
+  const res = await fetch(path, {
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    ...options,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Une erreur est survenue.');
+  return data;
+}
+
+const params = new URLSearchParams(window.location.search);
+const token = params.get('token');
+
+document.getElementById('resetForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errorEl = document.getElementById('resetError');
+  const successEl = document.getElementById('resetSuccess');
+  errorEl.classList.add('hidden');
+  successEl.classList.add('hidden');
+
+  if (!token) {
+    errorEl.textContent = 'Lien invalide. Refais une demande de mot de passe oublié.';
+    errorEl.classList.remove('hidden');
+    return;
+  }
+
+  const newPassword = document.getElementById('newPassword').value;
+  try {
+    await api('/api/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, newPassword }),
+    });
+    successEl.textContent = 'Mot de passe mis à jour ! Tu peux te connecter.';
+    successEl.classList.remove('hidden');
+    document.getElementById('resetForm').reset();
+  } catch (err) {
+    errorEl.textContent = err.message;
+    errorEl.classList.remove('hidden');
+  }
+});
+</script>
+</body>
+</html>

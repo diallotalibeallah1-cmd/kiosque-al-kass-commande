@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connexion — Kiosque Al Kass</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: #1b1712; color: #f2e9dd; font-family: 'IBM Plex Sans', sans-serif; padding: 20px;
+  }
+  .carte { max-width: 360px; width: 100%; background: #241f19; border: 1px solid #3a332a; border-radius: 16px; padding: 28px 24px; }
+  .eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.15em; color: #e8a93b; text-transform: uppercase; text-align: center; }
+  h1 { font-family: 'Fraunces', serif; font-weight: 900; font-size: 26px; text-align: center; margin: 6px 0 22px; }
+  label { display: block; font-size: 12.5px; color: #a99d8c; margin-bottom: 6px; }
+  input {
+    width: 100%; padding: 12px 14px; border-radius: 8px; border: 1px solid #3a332a;
+    background: #2c261e; color: #f2e9dd; font-family: 'IBM Plex Mono', monospace; font-size: 15px;
+    margin-bottom: 16px; letter-spacing: 0.03em;
+  }
+  button {
+    width: 100%; padding: 13px; border-radius: 10px; border: none;
+    background: #c1421a; color: #fff; font-family: 'Fraunces', serif; font-weight: 700; font-size: 15px;
+    cursor: pointer;
+  }
+  button:disabled { background: #6b6154; cursor: not-allowed; }
+  .msg { font-size: 13px; text-align: center; margin-top: 14px; min-height: 18px; }
+  .msg.erreur { color: #d97757; }
+  .msg.ok { color: #6a9a4f; }
+  .etape2 { display: none; }
+  .retour { text-align: center; margin-top: 14px; font-size: 12.5px; color: #a99d8c; cursor: pointer; text-decoration: underline; }
+</style>
+</head>
+<body>
+  <div class="carte">
+    <div class="eyebrow">Kiosque Al Kass</div>
+    <h1>Espace entreprise</h1>
+
+    <div id="etape1">
+      <label for="telephone">Numéro de téléphone</label>
+      <input type="tel" id="telephone" placeholder="Ex : 2250100000001">
+      <button id="btnEnvoyer" onclick="envoyerCode()">Recevoir le code</button>
+    </div>
+
+    <div class="etape2" id="etape2">
+      <label for="code">Code reçu par WhatsApp</label>
+      <input type="text" id="code" placeholder="000000" maxlength="6">
+      <button id="btnVerifier" onclick="verifierCode()">Se connecter</button>
+      <div class="retour" onclick="retour()">← Changer de numéro</div>
+    </div>
+
+    <div class="msg" id="msg"></div>
+  </div>
+
+<script>
+let telephoneActuel = "";
+
+function afficherMsg(texte, type) {
+  const m = document.getElementById('msg');
+  m.textContent = texte;
+  m.className = 'msg ' + (type || '');
+}
+
+async function envoyerCode() {
+  const telephone = document.getElementById('telephone').value.trim();
+  if (!telephone) { afficherMsg('Entrez un numéro.', 'erreur'); return; }
+
+  const btn = document.getElementById('btnEnvoyer');
+  btn.disabled = true;
+  btn.textContent = 'Envoi en cours...';
+
+  try {
+    const res = await fetch('/entreprise/connexion', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ telephone })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      telephoneActuel = telephone;
+      document.getElementById('etape1').style.display = 'none';
+      document.getElementById('etape2').style.display = 'block';
+      afficherMsg('Code envoyé par WhatsApp ✅', 'ok');
+    } else {
+      afficherMsg(data.erreur || 'Erreur.', 'erreur');
+    }
+  } catch (e) {
+    afficherMsg('Connexion impossible.', 'erreur');
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Recevoir le code';
+}
+
+async function verifierCode() {
+  const code = document.getElementById('code').value.trim();
+  if (!code) { afficherMsg('Entrez le code reçu.', 'erreur'); return; }
+
+  const btn = document.getElementById('btnVerifier');
+  btn.disabled = true;
+  btn.textContent = 'Vérification...';
+
+  try {
+    const res = await fetch('/entreprise/verifier', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ telephone: telephoneActuel, code })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      window.location.href = '/entreprise/dashboard.html';
+    } else {
+      afficherMsg(data.erreur || 'Code invalide.', 'erreur');
+    }
+  } catch (e) {
+    afficherMsg('Connexion impossible.', 'erreur');
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Se connecter';
+}
+
+function retour() {
+  document.getElementById('etape1').style.display = 'block';
+  document.getElementById('etape2').style.display = 'none';
+  afficherMsg('', '');
+}
+</script>
+</body>
+</html>

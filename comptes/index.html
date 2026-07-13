@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kiosque Alkass</title>
+<link rel="stylesheet" href="styles.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="auth-screen" id="authScreen">
+  <div class="auth-card">
+    <div class="brand"><span>K</span><div><h1>Kiosque Alkass</h1><p id="authSubtitle">Connexion utilisateur</p></div></div>
+
+    <form id="loginForm" class="form">
+      <input id="loginEmail" type="email" placeholder="Email" required />
+      <input id="loginPass" type="password" placeholder="Mot de passe" required />
+      <p class="error hidden" id="loginError"></p>
+      <button type="submit">Se connecter</button>
+      <a href="#" id="showForgot">Mot de passe oublié ?</a>
+      <a href="#" id="showRegister">Créer un compte</a>
+    </form>
+
+    <form id="registerForm" class="form hidden">
+      <input id="registerEmail" type="email" placeholder="Email" required />
+      <input id="registerPass" type="password" placeholder="Mot de passe (6 caractères min.)" required />
+      <p class="error hidden" id="registerError"></p>
+      <button type="submit">Créer mon compte</button>
+      <a href="#" id="showLogin">J'ai déjà un compte</a>
+    </form>
+
+    <form id="forgotForm" class="form hidden">
+      <p class="hint" style="margin:0 0 4px">Reçois un lien par email pour choisir un nouveau mot de passe.</p>
+      <input id="forgotEmail" type="email" placeholder="Ton email" required />
+      <p class="error hidden" id="forgotError"></p>
+      <p class="success hidden" id="forgotSuccess"></p>
+      <button type="submit">Envoyer le lien</button>
+      <a href="#" id="showLoginFromForgot">Retour à la connexion</a>
+    </form>
+
+    <div class="auth-footer">
+      <a href="privacy.html" target="_blank">Confidentialité</a>
+      <a href="terms.html" target="_blank">Conditions</a>
+      <a href="contact.html" target="_blank">Contact</a>
+    </div>
+  </div>
+</div>
+
+<div class="app hidden" id="app">
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand side"><span>K</span><div><h1>Kiosque Alkass</h1><p>Tableau de bord</p></div></div>
+    <nav>
+      <a class="active" data-section="dashboard" href="#">Dashboard</a>
+      <a data-section="analyse" href="#">Analyse</a>
+      <a data-section="objectifs" href="#">Objectifs</a>
+      <a data-section="historique" href="#">Historique</a>
+      <a data-section="compte" href="#">Compte</a>
+    </nav>
+    <button class="logout" id="logoutBtn">Se déconnecter</button>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="burger-btn" id="burgerBtn" aria-label="Menu">☰</button>
+      <div>
+        <h2>Bonjour, bienvenue sur Kiosque Alkass</h2>
+        <p>Suivi des ventes, dépenses, réinvestissements et activité du jour.</p>
+      </div>
+      <div class="userpill" id="userPill">Utilisateur connecté</div>
+      <a href="/" style="margin-left:10px;font-size:13px;color:#7a4a1d;">🍝 Voir la commande en ligne</a>
+    </header>
+
+    <div class="global-loader hidden" id="globalLoader"><span class="spinner"></span> Chargement…</div>
+
+    <!-- SECTION DASHBOARD -->
+    <section class="view" id="view-dashboard">
+      <section class="kpis">
+        <article class="card yellow"><span>Vendu</span><strong id="kpiVendu">0 FCFA</strong><small id="kpiVenduSmall">Aucune vente enregistrée</small></article>
+        <article class="card brown"><span>Dépenses</span><strong id="kpiDepenses">0 FCFA</strong><small>Stock, transport, frais</small></article>
+        <article class="card dark"><span>Réinvestis</span><strong id="kpiReinvestis">0 FCFA</strong><small>Nouvelle marchandise</small></article>
+        <article class="card light"><span>Bénéfice</span><strong id="kpiBenefice">0 FCFA</strong><small>Net après dépenses</small></article>
+      </section>
+
+      <article class="panel export-panel">
+        <div class="panel-head"><h3>Exporter mes données</h3><span class="tag">Rapports</span></div>
+        <div class="export-actions">
+          <a href="/api/export/excel" class="export-btn">📊 Télécharger en Excel</a>
+          <a href="/api/export/pdf" class="export-btn">📄 Télécharger en PDF</a>
+        </div>
+      </article>
+
+      <section class="grid2">
+        <article class="panel">
+          <div class="panel-head"><h3>Travail du jour</h3><span class="tag">En cours</span></div>
+          <table>
+            <thead><tr><th>Date</th><th>Compte rendu</th><th>Montant</th><th></th></tr></thead>
+            <tbody id="reportsTableBody">
+              <tr class="empty-row"><td colspan="4">Chargement…</td></tr>
+            </tbody>
+          </table>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head"><h3>Ajouter un compte rendu</h3><span class="tag">Rapport</span></div>
+          <form class="report-form" id="reportForm">
+            <input id="repDate" placeholder="Date" type="date" required />
+            <input id="repVendu" placeholder="Vendu (FCFA)" type="number" min="0" />
+            <input id="repDepenses" placeholder="Dépenses (FCFA)" type="number" min="0" />
+            <input id="repReinvestis" placeholder="Réinvestis (FCFA)" type="number" min="0" />
+            <textarea id="repNote" placeholder="Écris ici le compte rendu du travail, les ventes, les dépenses et les remarques."></textarea>
+            <button type="submit">Enregistrer</button>
+          </form>
+        </article>
+      </section>
+    </section>
+
+    <!-- SECTION ANALYSE -->
+    <section class="view hidden" id="view-analyse">
+      <section class="grid2">
+        <article class="panel">
+          <div class="panel-head"><h3>Meilleur jour</h3><span class="tag good">👍</span></div>
+          <div id="bestDayBox" class="highlight-box">Pas encore de données</div>
+        </article>
+        <article class="panel">
+          <div class="panel-head"><h3>Jour le plus difficile</h3><span class="tag bad">⚠️</span></div>
+          <div id="worstDayBox" class="highlight-box">Pas encore de données</div>
+        </article>
+      </section>
+
+      <article class="panel">
+        <div class="panel-head">
+          <h3>Évolution</h3>
+          <div class="period-switch">
+            <button class="period-btn active" data-period="day">Jour</button>
+            <button class="period-btn" data-period="week">Semaine</button>
+            <button class="period-btn" data-period="month">Mois</button>
+          </div>
+        </div>
+        <canvas id="analyticsChart" height="90"></canvas>
+      </article>
+    </section>
+
+    <!-- SECTION OBJECTIFS -->
+    <section class="view hidden" id="view-objectifs">
+      <article class="panel">
+        <div class="panel-head"><h3>Ton objectif</h3><span class="tag">Bénéfice net</span></div>
+        <div id="goalDisplay" class="goal-display">
+          <p class="hint">Tu n'as pas encore fixé d'objectif.</p>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head"><h3>Fixer un objectif</h3><span class="tag">Modifier</span></div>
+        <form class="report-form" id="goalForm">
+          <select id="goalPeriod" required>
+            <option value="weekly">Cette semaine</option>
+            <option value="monthly">Ce mois</option>
+          </select>
+          <input id="goalAmount" placeholder="Montant à atteindre (FCFA)" type="number" min="0" required />
+          <button type="submit">Enregistrer l'objectif</button>
+        </form>
+      </article>
+    </section>
+
+    <!-- SECTION HISTORIQUE -->
+    <section class="view hidden" id="view-historique">
+      <article class="panel">
+        <div class="panel-head"><h3>Historique des actions</h3><span class="tag">100 dernières</span></div>
+        <table>
+          <thead><tr><th>Date</th><th>Action</th><th>Détail</th></tr></thead>
+          <tbody id="historyTableBody">
+            <tr class="empty-row"><td colspan="3">Chargement…</td></tr>
+          </tbody>
+        </table>
+      </article>
+    </section>
+
+    <!-- SECTION COMPTE -->
+    <section class="view hidden" id="view-compte">
+      <article class="panel">
+        <div class="panel-head"><h3>Mes informations</h3><span class="tag">Compte</span></div>
+        <div class="account-info">
+          <span>Email</span>
+          <strong id="accountEmail">—</strong>
+        </div>
+        <p class="hint">Pour ta sécurité, ton mot de passe est chiffré et ne peut pas être réaffiché. Tu peux le changer ci-dessous.</p>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head"><h3>Changer le mot de passe</h3><span class="tag">Sécurité</span></div>
+        <form class="report-form" id="changePasswordForm">
+          <input id="currentPassword" type="password" placeholder="Mot de passe actuel" required />
+          <input id="newPassword" type="password" placeholder="Nouveau mot de passe (6 car. min.)" required />
+          <p class="error hidden" id="changePasswordError"></p>
+          <p class="success hidden" id="changePasswordSuccess"></p>
+          <button type="submit">Mettre à jour</button>
+        </form>
+      </article>
+    </section>
+
+    <footer class="app-footer">
+      <a href="privacy.html" target="_blank">Confidentialité</a>
+      <a href="terms.html" target="_blank">Conditions d'utilisation</a>
+      <a href="contact.html" target="_blank">Contact</a>
+    </footer>
+  </main>
+</div>
+<script src="script.js"></script>
+</body>
+</html>

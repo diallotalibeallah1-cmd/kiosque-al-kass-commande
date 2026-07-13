@@ -1,0 +1,21 @@
+{
+  "name": "kiosque-al-kass",
+  "version": "1.0.0",
+  "description": "Kiosque Al Kass — commande client, classement, espace entreprise et gestion des comptes rendus",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.0",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.4.5",
+    "exceljs": "^4.4.0",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "express-session": "^1.18.0",
+    "nodemailer": "^6.9.14",
+    "pdfkit": "^0.15.0"
+  }
+}
