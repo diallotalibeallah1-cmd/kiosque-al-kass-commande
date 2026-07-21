@@ -15,8 +15,15 @@ const { envoyerMessage } = require("./whatsapp");
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.static("public"));
-app.use("/comptes", express.static("comptes"));
+const optionsStatic = {
+    setHeaders: (res, path) => {
+        if (path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".html")) {
+            res.setHeader("Cache-Control", "no-cache");
+        }
+    }
+};
+app.use(express.static("public", optionsStatic));
+app.use("/comptes", express.static("comptes", optionsStatic));
 app.get("/comptes", (req, res) => res.redirect("/comptes/"));
 
 // Session pour l'espace "Comptes" (ancien dashboard, auth email/mot de passe)
